@@ -28,11 +28,6 @@ def read_auth_data():
     return auth_data["api_id"], auth_data["api_hash"]
 
 
-def callback(current, total):
-    print('Downloaded', current, 'out of', total,
-          'bytes: {:.2%}'.format(current / total))
-
-
 def main():
     if len(argv) not in {2, 3}:
         print("usage:\t%s <chat_id> [<min_id>]", file=stderr)
@@ -46,7 +41,7 @@ def main():
 
     with TelegramClient(SESSION_NAME, *read_auth_data()) as client:
         me = client.get_me().username
-        print("Logged in as %s" % me)
+        print("Logged in as %s" % me, flush=True)
         
         for msg in tqdm(client.iter_messages(chat_id, filter=InputMessagesFilterMusic, **config)):
             file_name = None
@@ -62,10 +57,10 @@ def main():
                 "@%s" % me, "->" if msg.out else "<-", chat_id,
                 msg.date,
                 file_name,
-            ))
+            ), flush=True)
 
             addr = msg.download_media(file=path.join(DOWNLOAD_ADDR, file_name))
-            print("downloaded %s" % addr)
+            print("downloaded %s" % addr, flush=True)
 
 
 if __name__ == '__main__':
